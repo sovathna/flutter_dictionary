@@ -19,7 +19,7 @@ class SplashPageViewModel extends ValueNotifier<SplashPageState> {
     final dbFile = File(path.join(dbDir.path, "data.sqlite"));
     final int dataVersion = settings.get("data_version", defaultValue: 0);
     if (dataVersion == configDataVersion && await dbFile.exists()) {
-      value = const SplashPageState(progress: 1.0);
+      value = const SplashPageState(shouldRedirect: true, progress: 1.0);
       return;
     }
 
@@ -36,5 +36,6 @@ class SplashPageViewModel extends ValueNotifier<SplashPageState> {
     final archive = ZipDecoder().decodeBytes(responseBytes);
     await dbFile.writeAsBytes(archive.first.content);
     settings.put("data_version", configDataVersion);
+    value = const SplashPageState(shouldRedirect: true, progress: 1.0);
   }
 }
