@@ -2,27 +2,89 @@
 
 part of 'database.dart';
 
-// **************************************************************************
-// MoorGenerator
-// **************************************************************************
-
 // ignore_for_file: type=lint
+class $WordsTable extends Words with TableInfo<$WordsTable, Word> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $WordsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _wordMeta = const VerificationMeta('word');
+  @override
+  late final GeneratedColumn<String> word = GeneratedColumn<String>(
+      'word', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _definitionMeta =
+      const VerificationMeta('definition');
+  @override
+  late final GeneratedColumn<String> definition = GeneratedColumn<String>(
+      'definition', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [id, word, definition];
+  @override
+  String get aliasedName => _alias ?? 'words';
+  @override
+  String get actualTableName => 'words';
+  @override
+  VerificationContext validateIntegrity(Insertable<Word> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('word')) {
+      context.handle(
+          _wordMeta, word.isAcceptableOrUnknown(data['word']!, _wordMeta));
+    } else if (isInserting) {
+      context.missing(_wordMeta);
+    }
+    if (data.containsKey('definition')) {
+      context.handle(
+          _definitionMeta,
+          definition.isAcceptableOrUnknown(
+              data['definition']!, _definitionMeta));
+    } else if (isInserting) {
+      context.missing(_definitionMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Word map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Word(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      word: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}word'])!,
+      definition: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}definition'])!,
+    );
+  }
+
+  @override
+  $WordsTable createAlias(String alias) {
+    return $WordsTable(attachedDatabase, alias);
+  }
+}
+
 class Word extends DataClass implements Insertable<Word> {
   final int id;
   final String word;
   final String definition;
-  Word({required this.id, required this.word, required this.definition});
-  factory Word.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return Word(
-      id: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
-      word: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}word'])!,
-      definition: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}definition'])!,
-    );
-  }
+  const Word({required this.id, required this.word, required this.definition});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -147,41 +209,62 @@ class WordsCompanion extends UpdateCompanion<Word> {
   }
 }
 
-class $WordsTable extends Words with TableInfo<$WordsTable, Word> {
+abstract class _$WordsDatabase extends GeneratedDatabase {
+  _$WordsDatabase(QueryExecutor e) : super(e);
+  late final $WordsTable words = $WordsTable(this);
+  @override
+  Iterable<TableInfo<Table, Object?>> get allTables =>
+      allSchemaEntities.whereType<TableInfo<Table, Object?>>();
+  @override
+  List<DatabaseSchemaEntity> get allSchemaEntities => [words];
+}
+
+class $HistoriesTable extends Histories
+    with TableInfo<$HistoriesTable, Historie> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $WordsTable(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _idMeta = const VerificationMeta('id');
+  $HistoriesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
-  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
-      type: const IntType(),
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
       requiredDuringInsert: false,
-      defaultConstraints: 'PRIMARY KEY AUTOINCREMENT');
-  final VerificationMeta _wordMeta = const VerificationMeta('word');
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _wordIdMeta = const VerificationMeta('wordId');
   @override
-  late final GeneratedColumn<String?> word = GeneratedColumn<String?>(
+  late final GeneratedColumn<int> wordId = GeneratedColumn<int>(
+      'word_id', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'));
+  static const VerificationMeta _wordMeta = const VerificationMeta('word');
+  @override
+  late final GeneratedColumn<String> word = GeneratedColumn<String>(
       'word', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
-  final VerificationMeta _definitionMeta = const VerificationMeta('definition');
+      type: DriftSqlType.string, requiredDuringInsert: true);
   @override
-  late final GeneratedColumn<String?> definition = GeneratedColumn<String?>(
-      'definition', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+  List<GeneratedColumn> get $columns => [id, wordId, word];
   @override
-  List<GeneratedColumn> get $columns => [id, word, definition];
+  String get aliasedName => _alias ?? 'histories';
   @override
-  String get aliasedName => _alias ?? 'words';
+  String get actualTableName => 'histories';
   @override
-  String get actualTableName => 'words';
-  @override
-  VerificationContext validateIntegrity(Insertable<Word> instance,
+  VerificationContext validateIntegrity(Insertable<Historie> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('word_id')) {
+      context.handle(_wordIdMeta,
+          wordId.isAcceptableOrUnknown(data['word_id']!, _wordIdMeta));
+    } else if (isInserting) {
+      context.missing(_wordIdMeta);
     }
     if (data.containsKey('word')) {
       context.handle(
@@ -189,56 +272,35 @@ class $WordsTable extends Words with TableInfo<$WordsTable, Word> {
     } else if (isInserting) {
       context.missing(_wordMeta);
     }
-    if (data.containsKey('definition')) {
-      context.handle(
-          _definitionMeta,
-          definition.isAcceptableOrUnknown(
-              data['definition']!, _definitionMeta));
-    } else if (isInserting) {
-      context.missing(_definitionMeta);
-    }
     return context;
   }
 
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  Word map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return Word.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+  Historie map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Historie(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      wordId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}word_id'])!,
+      word: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}word'])!,
+    );
   }
 
   @override
-  $WordsTable createAlias(String alias) {
-    return $WordsTable(attachedDatabase, alias);
+  $HistoriesTable createAlias(String alias) {
+    return $HistoriesTable(attachedDatabase, alias);
   }
-}
-
-abstract class _$WordsDatabase extends GeneratedDatabase {
-  _$WordsDatabase(QueryExecutor e) : super(SqlTypeSystem.defaultInstance, e);
-  late final $WordsTable words = $WordsTable(this);
-  @override
-  Iterable<TableInfo> get allTables => allSchemaEntities.whereType<TableInfo>();
-  @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [words];
 }
 
 class Historie extends DataClass implements Insertable<Historie> {
   final int id;
   final int wordId;
   final String word;
-  Historie({required this.id, required this.wordId, required this.word});
-  factory Historie.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return Historie(
-      id: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
-      wordId: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}word_id'])!,
-      word: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}word'])!,
-    );
-  }
+  const Historie({required this.id, required this.wordId, required this.word});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -363,39 +425,41 @@ class HistoriesCompanion extends UpdateCompanion<Historie> {
   }
 }
 
-class $HistoriesTable extends Histories
-    with TableInfo<$HistoriesTable, Historie> {
+class $BookmarksTable extends Bookmarks
+    with TableInfo<$BookmarksTable, Bookmark> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $HistoriesTable(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _idMeta = const VerificationMeta('id');
+  $BookmarksTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
-  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
-      type: const IntType(),
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
       requiredDuringInsert: false,
-      defaultConstraints: 'PRIMARY KEY AUTOINCREMENT');
-  final VerificationMeta _wordIdMeta = const VerificationMeta('wordId');
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _wordIdMeta = const VerificationMeta('wordId');
   @override
-  late final GeneratedColumn<int?> wordId = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> wordId = GeneratedColumn<int>(
       'word_id', aliasedName, false,
-      type: const IntType(),
+      type: DriftSqlType.int,
       requiredDuringInsert: true,
-      defaultConstraints: 'UNIQUE');
-  final VerificationMeta _wordMeta = const VerificationMeta('word');
+      defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'));
+  static const VerificationMeta _wordMeta = const VerificationMeta('word');
   @override
-  late final GeneratedColumn<String?> word = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> word = GeneratedColumn<String>(
       'word', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      type: DriftSqlType.string, requiredDuringInsert: true);
   @override
   List<GeneratedColumn> get $columns => [id, wordId, word];
   @override
-  String get aliasedName => _alias ?? 'histories';
+  String get aliasedName => _alias ?? 'bookmarks';
   @override
-  String get actualTableName => 'histories';
+  String get actualTableName => 'bookmarks';
   @override
-  VerificationContext validateIntegrity(Insertable<Historie> instance,
+  VerificationContext validateIntegrity(Insertable<Bookmark> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
@@ -420,14 +484,21 @@ class $HistoriesTable extends Histories
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  Historie map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return Historie.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+  Bookmark map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Bookmark(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      wordId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}word_id'])!,
+      word: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}word'])!,
+    );
   }
 
   @override
-  $HistoriesTable createAlias(String alias) {
-    return $HistoriesTable(attachedDatabase, alias);
+  $BookmarksTable createAlias(String alias) {
+    return $BookmarksTable(attachedDatabase, alias);
   }
 }
 
@@ -435,18 +506,7 @@ class Bookmark extends DataClass implements Insertable<Bookmark> {
   final int id;
   final int wordId;
   final String word;
-  Bookmark({required this.id, required this.wordId, required this.word});
-  factory Bookmark.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return Bookmark(
-      id: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
-      wordId: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}word_id'])!,
-      word: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}word'])!,
-    );
-  }
+  const Bookmark({required this.id, required this.wordId, required this.word});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -571,80 +631,13 @@ class BookmarksCompanion extends UpdateCompanion<Bookmark> {
   }
 }
 
-class $BookmarksTable extends Bookmarks
-    with TableInfo<$BookmarksTable, Bookmark> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $BookmarksTable(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
-      'id', aliasedName, false,
-      type: const IntType(),
-      requiredDuringInsert: false,
-      defaultConstraints: 'PRIMARY KEY AUTOINCREMENT');
-  final VerificationMeta _wordIdMeta = const VerificationMeta('wordId');
-  @override
-  late final GeneratedColumn<int?> wordId = GeneratedColumn<int?>(
-      'word_id', aliasedName, false,
-      type: const IntType(),
-      requiredDuringInsert: true,
-      defaultConstraints: 'UNIQUE');
-  final VerificationMeta _wordMeta = const VerificationMeta('word');
-  @override
-  late final GeneratedColumn<String?> word = GeneratedColumn<String?>(
-      'word', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
-  @override
-  List<GeneratedColumn> get $columns => [id, wordId, word];
-  @override
-  String get aliasedName => _alias ?? 'bookmarks';
-  @override
-  String get actualTableName => 'bookmarks';
-  @override
-  VerificationContext validateIntegrity(Insertable<Bookmark> instance,
-      {bool isInserting = false}) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('word_id')) {
-      context.handle(_wordIdMeta,
-          wordId.isAcceptableOrUnknown(data['word_id']!, _wordIdMeta));
-    } else if (isInserting) {
-      context.missing(_wordIdMeta);
-    }
-    if (data.containsKey('word')) {
-      context.handle(
-          _wordMeta, word.isAcceptableOrUnknown(data['word']!, _wordMeta));
-    } else if (isInserting) {
-      context.missing(_wordMeta);
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  Bookmark map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return Bookmark.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
-  }
-
-  @override
-  $BookmarksTable createAlias(String alias) {
-    return $BookmarksTable(attachedDatabase, alias);
-  }
-}
-
 abstract class _$LocalDatabase extends GeneratedDatabase {
-  _$LocalDatabase(QueryExecutor e) : super(SqlTypeSystem.defaultInstance, e);
+  _$LocalDatabase(QueryExecutor e) : super(e);
   late final $HistoriesTable histories = $HistoriesTable(this);
   late final $BookmarksTable bookmarks = $BookmarksTable(this);
   @override
-  Iterable<TableInfo> get allTables => allSchemaEntities.whereType<TableInfo>();
+  Iterable<TableInfo<Table, Object?>> get allTables =>
+      allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [histories, bookmarks];
 }
