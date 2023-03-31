@@ -5,7 +5,7 @@ import 'package:collection/collection.dart';
 
 class DrawerWidget extends StatelessWidget {
   final Function(int) _onItemSelected;
-  const DrawerWidget(this._onItemSelected, {Key? key}) : super(key: key);
+  const DrawerWidget(this._onItemSelected, {super.key});
 
   List<Widget> _drawerItems(BuildContext context) {
     final List<Widget> widgets = List.empty(growable: true);
@@ -17,7 +17,7 @@ class DrawerWidget extends StatelessWidget {
         }
         widgets.add(
           Selector<AppViewModel, bool>(
-            selector: (_, vm) => vm.value.selectedDrawer == i,
+            selector: (_, vm) => vm.value.selectedPosition == i,
             child: Text(ele.title),
             builder: (_, selected, child) {
               return ListTile(
@@ -25,8 +25,8 @@ class DrawerWidget extends StatelessWidget {
                 title: child,
                 leading: Icon(ele.iconData),
                 onTap: () {
-                  _onItemSelected(i);
-                  context.read<AppViewModel>().selectDrawerItem(i);
+                  Navigator.of(context).pop();
+                  context.read<AppViewModel>().select(i);
                 },
               );
             },

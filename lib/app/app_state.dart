@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dictionary/main/drawer_widget.dart';
 
@@ -5,33 +7,33 @@ import 'package:flutter_dictionary/main/drawer_widget.dart';
 class AppState {
   final bool isDarkTheme;
   final double fontSize;
-  final int selectedDrawer;
   final bool shouldShowSplash;
+  final List<int> navs;
 
-  const AppState({
-    required this.isDarkTheme,
-    required this.fontSize,
-    required this.selectedDrawer,
-    required this.shouldShowSplash,
-  });
+  const AppState(
+      this.isDarkTheme, this.fontSize, this.shouldShowSplash, this.navs);
 
-  static AppState init() => const AppState(
-      isDarkTheme: true,
-      fontSize: 16.0,
-      selectedDrawer: 0,
-      shouldShowSplash: true);
-
-  AppState copyWith(
-          {bool? isDarkTheme,
-          double? fontSize,
-          int? selectedDrawer,
-          bool? shouldShowSplash}) =>
-      AppState(
-        isDarkTheme: isDarkTheme ?? this.isDarkTheme,
-        fontSize: fontSize ?? this.fontSize,
-        selectedDrawer: selectedDrawer ?? this.selectedDrawer,
-        shouldShowSplash: shouldShowSplash ?? this.shouldShowSplash,
+  factory AppState.init() => const AppState(
+        true,
+        16.0,
+        true,
+        [0],
       );
 
-  String get title => drawerItemData[selectedDrawer].title;
+  AppState copyWith({
+    bool? isDarkTheme,
+    double? fontSize,
+    bool? shouldShowSplash,
+    List<int>? navs,
+  }) =>
+      AppState(
+        isDarkTheme ?? this.isDarkTheme,
+        fontSize ?? this.fontSize,
+        shouldShowSplash ?? this.shouldShowSplash,
+        navs ?? this.navs,
+      );
+
+  String get title => drawerItemData[selectedPosition].title;
+
+  int get selectedPosition => navs[navs.length - 1];
 }

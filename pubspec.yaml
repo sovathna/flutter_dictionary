@@ -100,12 +100,12 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   fonts:
-    - family: Noto Serif Khmer
+    - family: Hanuman
       fonts:
-        - asset: assets/fonts/noto_serif_khmer/regular.ttf
-        - asset: assets/fonts/noto_serif_khmer/light.ttf
+        - asset: assets/fonts/hanuman/regular.ttf
+        - asset: assets/fonts/hanuman/light.ttf
           weight: 300
-        - asset: assets/fonts/noto_serif_khmer/bold.ttf
+        - asset: assets/fonts/hanuman/bold.ttf
           weight: 700
   # fonts:
   #   - family: Schyler

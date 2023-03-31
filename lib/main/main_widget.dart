@@ -23,41 +23,39 @@ class MainWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final pageController = PageController();
     return ChangeNotifierProvider(
       create: (context) => WordsPageViewModel(context.read(), context.read()),
       child: Scaffold(
-        appBar: AppBar(
-          title: Row(
-            children: [
-              Expanded(child: Text(context.watch<AppViewModel>().value.title)),
-            ],
+          appBar: AppBar(
+            title: Row(
+              children: [
+                Expanded(
+                    child: Text(context.watch<AppViewModel>().value.title)),
+              ],
+            ),
+            actions: _createActions(context),
           ),
-          actions: _createActions(context),
-        ),
-        drawer: DrawerWidget((position) {
-          pageController.jumpToPage(position);
-          Navigator.of(context).pop();
-        }),
-        body: PageView(
-          physics: const NeverScrollableScrollPhysics(),
-          controller: pageController,
-          children: [
-            const WordsPageWidget(),
-            ChangeNotifierProvider(
-              create: (context) =>
-                  HistoriesViewModel(context.read(), context.read()),
-              builder: (_, __) => const HistoriesPageWidget(),
-            ),
-            ChangeNotifierProvider(
-              create: (context) =>
-                  BookmarksViewModel(context.read(), context.read()),
-              builder: (_, __) => const BookmarksPageWidget(),
-            ),
-            const AboutPageWidget(),
-          ],
-        ),
-      ),
+          drawer: DrawerWidget((position) {
+            Navigator.of(context).pop();
+          }),
+          body: IndexedStack(
+            sizing: StackFit.expand,
+            index: context.read<AppViewModel>().value.selectedPosition,
+            children: [
+              const WordsPageWidget(),
+              ChangeNotifierProvider(
+                create: (context) =>
+                    HistoriesViewModel(context.read(), context.read()),
+                builder: (_, __) => const HistoriesPageWidget(),
+              ),
+              ChangeNotifierProvider(
+                create: (context) =>
+                    BookmarksViewModel(context.read(), context.read()),
+                builder: (_, __) => const BookmarksPageWidget(),
+              ),
+              const AboutPageWidget(),
+            ],
+          )),
     );
   }
 }

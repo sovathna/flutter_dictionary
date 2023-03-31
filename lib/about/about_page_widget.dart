@@ -26,7 +26,7 @@ class AboutPageWidget extends StatelessWidget {
             ),
             const SizedBox(height: 32.0),
             const Text(
-              "ពុម្ពអក្សរប្រើប្រាស់ Suwannaphum\nby Danh Hong",
+              "ពុម្ពអក្សរប្រើប្រាស់\nHanuman ដោយ Danh Hong",
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 32.0),

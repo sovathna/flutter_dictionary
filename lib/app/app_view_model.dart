@@ -28,7 +28,7 @@ class AppViewModel extends ValueNotifier<AppState> {
 
   void increaseFontSize() {
     double fontSize = settings.get("font_size", defaultValue: 16.0);
-    fontSize += 2;
+    fontSize += 2.0;
     if (fontSize > 50.0) fontSize = 50.0;
     value = value.copyWith(fontSize: fontSize);
     settings.put("font_size", fontSize);
@@ -36,13 +36,17 @@ class AppViewModel extends ValueNotifier<AppState> {
 
   void decreaseFontSize() {
     double fontSize = settings.get("font_size", defaultValue: 16.0);
-    fontSize -= 2;
+    fontSize -= 2.0;
     if (fontSize < 16.0) fontSize = 16.0;
     value = value.copyWith(fontSize: fontSize);
     settings.put("font_size", fontSize);
   }
 
-  void selectDrawerItem(int position) {
-    value = value.copyWith(selectedDrawer: position);
+  void select(int position) {
+    value = value.copyWith(navs: value.navs.toList()..add(position));
+  }
+
+  void pop() {
+    value = value.copyWith(navs: value.navs.toList()..removeLast());
   }
 }
