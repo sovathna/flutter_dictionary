@@ -8,6 +8,7 @@ import 'package:flutter_dictionary/definition/definition_state.dart';
 import 'package:flutter_dictionary/model/word_ui.dart';
 import 'package:flutter_dictionary/words/words_state.dart';
 import 'package:flutter_dictionary/words_page/words_page_state.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class BookmarksViewModel extends AbstractWordsPageViewModel {
   BookmarksViewModel(super.db, super.localDb);
@@ -77,7 +78,7 @@ class WordsPageViewModel extends AbstractWordsPageViewModel {
 }
 
 abstract class AbstractWordsPageViewModel
-    extends ValueNotifier<WordsPageState> {
+    extends StateNotifier<WordsPageState> {
   final WordsDatabase _db;
   final LocalDatabase _localDb;
   AbstractWordsPageViewModel(this._db, this._localDb)
@@ -85,9 +86,9 @@ abstract class AbstractWordsPageViewModel
     getWords(1, "");
   }
 
-  DefinitionState get currentDef => value.definitionState;
+  DefinitionState get currentDef => state.definitionState;
 
-  WordsState get currentWords => value.wordsState;
+  WordsState get currentWords => state.wordsState;
 
   void getDefinition(int wordId) async {
     if (currentDef.wordId == wordId) return;
@@ -121,7 +122,7 @@ abstract class AbstractWordsPageViewModel
           ),
         );
 
-    value = value.copyWith(definitionState: newDef);
+    state = state.copyWith(definitionState: newDef);
   }
 
   void addOrDeleteBookmark() async {
@@ -141,7 +142,7 @@ abstract class AbstractWordsPageViewModel
             ),
           );
     }
-    value = value.copyWith(
+    state = state.copyWith(
       definitionState: currentDef.copyWith(isBookmark: !currentDef.isBookmark),
     );
   }
@@ -165,7 +166,7 @@ abstract class AbstractWordsPageViewModel
 
   void getWords(int page, String filter) async {
     if (currentWords.isLoading) return;
-    value = value.copyWith(
+    state = state.copyWith(
         wordsState: currentWords.copyWith(
       isLoading: true,
       page: page,
@@ -181,7 +182,7 @@ abstract class AbstractWordsPageViewModel
       newWords = pageWords;
     }
 
-    value = value.copyWith(
+    state = state.copyWith(
       wordsState: currentWords.copyWith(
         isLoading: false,
         words: newWords,

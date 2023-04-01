@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dictionary/definition/definition_widget.dart';
 import 'package:flutter_dictionary/words_page/words_page_view_model.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_dictionary/words_page/words_page_widget.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class DefinitionPage<VM extends AbstractWordsPageViewModel>
-    extends StatelessWidget {
+    extends ConsumerWidget {
   const DefinitionPage({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final width = MediaQuery.of(context).size.width;
     if (width >= 600) {
       if (Navigator.canPop(context)) {
@@ -23,8 +24,8 @@ class DefinitionPage<VM extends AbstractWordsPageViewModel>
           children: [
             Expanded(
               child: Text(
-                context
-                    .select<VM, String>((vm) => vm.value.definitionState.word),
+                ref.watch(tmpProvider(VM)
+                    .select((value) => value.definitionState.word)),
               ),
             ),
           ],

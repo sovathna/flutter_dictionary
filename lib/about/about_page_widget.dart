@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dictionary/app/app_view_model.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_dictionary/main.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
-class AboutPageWidget extends StatelessWidget {
-  const AboutPageWidget({Key? key}) : super(key: key);
+class AboutPageWidget extends ConsumerWidget {
+  const AboutPageWidget({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: SingleChildScrollView(
@@ -52,7 +52,8 @@ class AboutPageWidget extends StatelessWidget {
             ),
             const SizedBox(height: 32.0),
             Image.asset(
-              context.select<AppViewModel, bool>((vm) => vm.value.isDarkTheme)
+              ref.watch(
+                      appViewModelProvider.select((value) => value.isDarkTheme))
                   ? "assets/icons/flutter_dark.png"
                   : "assets/icons/flutter_light.png",
               width: 180.0,

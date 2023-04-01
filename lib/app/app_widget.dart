@@ -1,12 +1,11 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dictionary/app/app_view_model.dart';
 import 'package:flutter_dictionary/color_schemes.g.dart';
 import 'package:flutter_dictionary/const.dart';
+import 'package:flutter_dictionary/main.dart';
 import 'package:flutter_dictionary/main/main_widget.dart';
-import 'package:flutter_dictionary/splash/splash_page_view_model.dart';
 import 'package:flutter_dictionary/splash/splash_page_widget.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AppScrollBehaviour extends MaterialScrollBehavior {
   // Override behavior methods and getters like dragDevices
@@ -18,11 +17,11 @@ class AppScrollBehaviour extends MaterialScrollBehavior {
       };
 }
 
-class AppWidget extends StatelessWidget {
+class AppWidget extends ConsumerWidget {
   const AppWidget({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp(
       scrollBehavior: AppScrollBehaviour(),
       debugShowCheckedModeBanner: false,
@@ -36,32 +35,15 @@ class AppWidget extends StatelessWidget {
         colorScheme: darkColorScheme,
         fontFamily: fontFamily,
       ),
-      themeMode: context.select<AppViewModel, ThemeMode>(
-          (vm) => vm.value.isDarkTheme ? ThemeMode.dark : ThemeMode.light),
+      themeMode:
+          ref.watch(appViewModelProvider.select((value) => value.isDarkTheme))
+              ? ThemeMode.dark
+              : ThemeMode.light,
       title: 'Khmer Dictionary',
-      home: context
-              .select<AppViewModel, bool>((vm) => vm.value.shouldShowSplash)
-          ? ChangeNotifierProvider(
-              create: (_) => SplashPageViewModel(),
-              child: SplashPageWidget(
-                () => WidgetsBinding.instance.addPostFrameCallback(
-                  (timeStamp) => context.read<AppViewModel>().goToMainPage(),
-                ),
-              ),
-            )
-          : Selector<AppViewModel, int>(
-              selector: (context, vm) => vm.value.navs.length,
-              builder: (context, value, _) {
-                return WillPopScope(
-                    onWillPop: () async {
-                      if (value > 1) {
-                        context.read<AppViewModel>().pop();
-                        return false;
-                      }
-                      return true;
-                    },
-                    child: const MainWidget());
-              }),
+      home: ref.watch(
+              appViewModelProvider.select((value) => value.shouldShowSplash))
+          ? const SplashPageWidget()
+          : const MainWidget(),
     );
   }
 }

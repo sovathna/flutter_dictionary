@@ -1,28 +1,28 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_dictionary/app/app_state.dart';
-import 'package:hive/hive.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-class AppViewModel extends ValueNotifier<AppState> {
-  final Box settings = Hive.box("settings");
+class AppViewModel extends StateNotifier<AppState> {
+  final Box settings;
 
-  AppViewModel() : super(AppState.init()) {
+  AppViewModel(this.settings) : super(AppState.init()) {
     _getTheme();
   }
 
   void goToMainPage() {
-    value = value.copyWith(shouldShowSplash: false);
+    state = state.copyWith(shouldShowSplash: false);
   }
 
   void _getTheme() {
-    value = value.copyWith(
+    state = state.copyWith(
       isDarkTheme: settings.get("is_dark_theme", defaultValue: true),
       fontSize: settings.get("font_size", defaultValue: 16.0),
     );
   }
 
   void changeTheme() {
-    final newTheme = !value.isDarkTheme;
-    value = value.copyWith(isDarkTheme: newTheme);
+    final newTheme = !state.isDarkTheme;
+    state = state.copyWith(isDarkTheme: newTheme);
     settings.put("is_dark_theme", newTheme);
   }
 
@@ -30,7 +30,7 @@ class AppViewModel extends ValueNotifier<AppState> {
     double fontSize = settings.get("font_size", defaultValue: 16.0);
     fontSize += 2.0;
     if (fontSize > 50.0) fontSize = 50.0;
-    value = value.copyWith(fontSize: fontSize);
+    state = state.copyWith(fontSize: fontSize);
     settings.put("font_size", fontSize);
   }
 
@@ -38,15 +38,16 @@ class AppViewModel extends ValueNotifier<AppState> {
     double fontSize = settings.get("font_size", defaultValue: 16.0);
     fontSize -= 2.0;
     if (fontSize < 16.0) fontSize = 16.0;
-    value = value.copyWith(fontSize: fontSize);
+    state = state.copyWith(fontSize: fontSize);
     settings.put("font_size", fontSize);
   }
 
   void select(int position) {
-    value = value.copyWith(navs: value.navs.toList()..add(position));
+    if (state.selectedPosition == position) return;
+    state = state.copyWith(navs: state.navs.toList()..add(position));
   }
 
   void pop() {
-    value = value.copyWith(navs: value.navs.toList()..removeLast());
+    state = state.copyWith(navs: state.navs.toList()..removeLast());
   }
 }

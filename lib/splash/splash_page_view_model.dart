@@ -4,13 +4,14 @@ import 'package:archive/archive_io.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dictionary/const.dart';
 import 'package:flutter_dictionary/splash/splash_page_state.dart';
-import 'package:hive/hive.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 
-class SplashPageViewModel extends ValueNotifier<SplashPageState> {
-  final Box settings = Hive.box("settings");
-  SplashPageViewModel() : super(const SplashPageState()) {
+class SplashPageViewModel extends StateNotifier<SplashPageState> {
+  final Box settings;
+  SplashPageViewModel(this.settings) : super(const SplashPageState()) {
     _downloadAndExtract();
   }
 
@@ -19,7 +20,7 @@ class SplashPageViewModel extends ValueNotifier<SplashPageState> {
     final dbFile = File(path.join(dbDir.path, "data.sqlite"));
     final int dataVersion = settings.get("data_version", defaultValue: 0);
     if (dataVersion == configDataVersion && await dbFile.exists()) {
-      value = const SplashPageState(shouldRedirect: true, progress: 1.0);
+      state = const SplashPageState(shouldRedirect: true, progress: 1.0);
       return;
     }
 
@@ -29,13 +30,13 @@ class SplashPageViewModel extends ValueNotifier<SplashPageState> {
 
     final responseBytes = await consolidateHttpClientResponseBytes(
       response,
-      onBytesReceived: (cumulative, total) => value = SplashPageState(
+      onBytesReceived: (cumulative, total) => state = SplashPageState(
         progress: cumulative.toDouble() / (total ?? 1.0),
       ),
     );
     final archive = ZipDecoder().decodeBytes(responseBytes);
     await dbFile.writeAsBytes(archive.first.content);
     settings.put("data_version", configDataVersion);
-    value = const SplashPageState(shouldRedirect: true, progress: 1.0);
+    state = const SplashPageState(shouldRedirect: true, progress: 1.0);
   }
 }

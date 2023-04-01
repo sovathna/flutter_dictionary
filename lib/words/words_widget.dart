@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dictionary/model/word_ui.dart';
+import 'package:flutter_dictionary/definition/definition_page.dart';
 import 'package:flutter_dictionary/words_page/words_page_view_model.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_dictionary/words_page/words_page_widget.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class WordsWidget<VM extends AbstractWordsPageViewModel>
-    extends StatelessWidget {
-  final void Function(int) onItemClick;
-
-  const WordsWidget({Key? key, required this.onItemClick}) : super(key: key);
+    extends ConsumerWidget {
+  final double width;
+  const WordsWidget(this.width, {Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    final vm = Provider.of<VM>(context, listen: false);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final vm = ref.watch(tmpProvider(VM).notifier);
     final ScrollController scrollController = ScrollController();
     final TextEditingController controller =
         TextEditingController(text: vm.currentWords.filter);
@@ -23,7 +23,8 @@ class WordsWidget<VM extends AbstractWordsPageViewModel>
         vm.getMoreWords();
       }
     });
-
+    final wordsState =
+        ref.watch(tmpProvider(VM).select((value) => value.wordsState));
     return Column(
       children: [
         Padding(
@@ -33,8 +34,8 @@ class WordsWidget<VM extends AbstractWordsPageViewModel>
             controller: controller,
             decoration: InputDecoration(
               prefixIcon: const Icon(Icons.search),
-              suffixIcon: context.select<VM, bool>(
-                      (vm) => vm.currentWords.filter.isNotEmpty)
+              suffixIcon: ref.watch(tmpProvider(VM)
+                      .select((value) => value.wordsState.filter.isNotEmpty))
                   ? IconButton(
                       onPressed: () {
                         controller.clear();
@@ -56,27 +57,29 @@ class WordsWidget<VM extends AbstractWordsPageViewModel>
         Expanded(
           child: Stack(
             children: [
-              Selector<VM, List<WordUi>>(
-                  selector: (_, vm) => vm.currentWords.wordList,
-                  builder: (_, words, __) {
-                    return ListView.builder(
-                      controller: scrollController,
-                      itemCount: words.length,
-                      itemBuilder: (_, index) => WordItemWidget(
-                        value: words[index].value,
-                        onItemClick: () => onItemClick(words[index].id),
-                      ),
-                    );
-                  }),
-              Selector<VM, bool>(
-                selector: (_, vm) => vm.currentWords.shouldShowEmpty,
-                builder: (_, shouldShowEmpty, __) {
-                  if (shouldShowEmpty) {
-                    return const Center(child: Text("មិនមានពាក្យ!"));
-                  }
-                  return const SizedBox.shrink();
-                },
-              )
+              ListView.builder(
+                controller: scrollController,
+                itemCount: wordsState.wordList.length,
+                itemBuilder: (_, index) => WordItemWidget(
+                  value: wordsState.wordList[index].value,
+                  onItemClick: () {
+                    ref
+                        .read(tmpProvider(VM).notifier)
+                        .getDefinition(wordsState.wordList[index].id);
+                    if (width < 600) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => DefinitionPage<VM>(),
+                        ),
+                      );
+                    }
+                  },
+                ),
+              ),
+              wordsState.shouldShowEmpty
+                  ? const Center(child: Text("មិនមានពាក្យ!"))
+                  : const SizedBox.shrink()
             ],
           ),
         ),
